@@ -122,6 +122,8 @@ func (m *Model) Insert(param map[string]interface{}) (num int, err error) {
 		switch value.(type) {
 		case int, int32:
 			values = append(values, strconv.Itoa(value.(int)))
+		case uint32:
+			values = append(values, strconv.Itoa(int(value.(uint32))))
 		case int64:
 			values = append(values, strconv.FormatInt(value.(int64), 10))
 		case string:
