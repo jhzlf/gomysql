@@ -29,6 +29,12 @@ type Model struct {
 	join      string
 }
 
+type ConnectorPool struct {
+	db      *sql.DB
+	maxopen int
+	maxidle int
+}
+
 //use goini read the configuration file and connect the mysql database
 // func SetConfig(filename string) (*Model, error) {
 // 	c := new(Model)
@@ -373,21 +379,22 @@ func (m *Model) DbClose() {
 	m.db.Close()
 }
 
-func CreatePool(username, password, hostname, port, database, charset string, maxopen, maxidle int) (*sql.DB, error) {
+func CreatePool(username, password, hostname, port, database, charset string, maxopen, maxidle int) (*ConnectorPool, error) {
 	db, err := sql.Open("mysql", username+":"+password+"@tcp("+hostname+":"+port+")/"+database+"?charset="+charset)
 	db.SetMaxOpenConns(maxopen)
 	db.SetMaxIdleConns(maxidle)
 
 	err = db.Ping()
-	// if err != nil {
-	// 	//if connect error then return the error message
-	// 	return db, err
-	// }
-	return db, err
+	if err != nil {
+		//if connect error then return the error message
+		return nil, err
+	}
+	c := &ConnectorPool{db, maxopen, maxidle}
+	return c, err
 }
 
-func NewModel(db *sql.DB) *Model {
+func NewModel(db *ConnectorPool) *Model {
 	c := new(Model)
-	c.db = db
+	c.db = db.db
 	return c
 }
