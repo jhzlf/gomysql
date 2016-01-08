@@ -379,10 +379,10 @@ func CreatePool(username, password, hostname, port, database, charset string, ma
 	db.SetMaxIdleConns(maxidle)
 
 	err = db.Ping()
-	if err != nil {
-		//if connect error then return the error message
-		return c, err
-	}
+	// if err != nil {
+	// 	//if connect error then return the error message
+	// 	return db, err
+	// }
 	return db, err
 }
 
