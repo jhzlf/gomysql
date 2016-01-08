@@ -372,3 +372,22 @@ func Print(slice map[int]map[string]string) {
 func (m *Model) DbClose() {
 	m.db.Close()
 }
+
+func CreatePool(username, password, hostname, port, database, charset string, maxopen, maxidle int) (*sql.DB, error) {
+	db, err := sql.Open("mysql", username+":"+password+"@tcp("+hostname+":"+port+")/"+database+"?charset="+charset)
+	db.SetMaxOpenConns(maxopen)
+	db.SetMaxIdleConns(maxidle)
+
+	err = db.Ping()
+	if err != nil {
+		//if connect error then return the error message
+		return c, err
+	}
+	return db, err
+}
+
+func NewModel(db *sql.DB) *Model {
+	c := new(Model)
+	c.db = db
+	return c
+}
